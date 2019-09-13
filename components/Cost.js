@@ -8,7 +8,7 @@ import {
 
 import Colors from '../constants/Colors';
 
-export default function Cost({costChange}) {
+export default function Cost({costChange, totalCost, totalLandCost}) {
   return (
     // <Ionicons
     //   name={props.name}
@@ -25,19 +25,19 @@ export default function Cost({costChange}) {
             <View>
                 <Text>   Land Cost</Text>
                 <TextInput
-                    style={{ width: 90, height: 40, borderColor: 'gray', borderWidth: 1 }}
-                    placeholder="$"
-                    onChangeText={(number)=> costChange({land: parseInt(number)})}
-                    //   value={value}
+                    placeholder='$'
+                    style={{ width: 90, height: 40, borderColor: 'gray', borderWidth: 1, alignItems: 'center'}}
+                    keyboardType="number-pad"
+                    onChangeText={(number)=> costChange({landCost: parseInt(number)})}
                 />
             </View>
             <View>
                 <Text>    $/SF</Text>
                 <TextInput
-                    style={{ width: 60, height: 40, borderColor: 'gray', borderWidth: 1 }}
+                    style={{ width: 60, height: 40, borderColor: 'gray', borderWidth: 1, alignItems: 'center'}}
                     placeholder="$"
-                    onChangeText={text => onChangeText(text)}
-                    //   value={value}
+                    keyboardType="number-pad"
+                    onChangeText={(number)=> costChange({costSF: parseInt(number)})}
                 />
             </View>
             {/* OPTION TI ALLOWANCE */}
@@ -53,7 +53,8 @@ export default function Cost({costChange}) {
           <View>
                 <Text>    Total Cost</Text>
                 <Text
-                    style={{ width: 100, height: 40, borderColor: 'gray', borderWidth: 1 }}>
+                    style={{ width: 100, height: 40, borderColor: 'gray', borderWidth: 1, fontSize:16, paddingTop:8  }}>
+                        ${totalCost.toLocaleString('en')}
                 </Text>
             </View>
         </View>

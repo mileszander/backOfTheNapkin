@@ -1,5 +1,6 @@
 import * as WebBrowser from 'expo-web-browser';
 import React, {Component} from 'react'
+import axios from 'axios'
 import {
   Image,
   Platform,
@@ -14,7 +15,7 @@ import { MonoText } from '../components/StyledText';
 import TypeBuild from '../components/Type'
 import Dimensions from '../components/Dimensions'
 import Cost from '../components/Cost'
-// import Debt from '../components/Debt'
+import Debt from '../components/Debt'
 
 
 class Home extends Component {
@@ -28,16 +29,37 @@ class Home extends Component {
       grossSF: 0,
       netSF: 0,
       landCost:0,
-      buildSF: 0,
+      costSF: 0,
       totalCost: 0,
-
+      debtRatio: 0,
+      debtAmt: 0,
+      equityAmt:0,
+      libor: 0,
+      bps: 0,
+      totalInt:0,
     }
     this.onChecked=this.onChecked.bind(this)
     this.isChecked=this.isChecked.bind(this)
     this.changeDimensions=this.changeDimensions.bind(this)
     this.grossCalc=this.grossCalc.bind(this)
     this.costChange=this.costChange.bind(this)
+    this.debtCalc = this.debtCalc.bind(this)
+    this.intCalc = this.intCalc.bind(this)
   }
+
+componentDidMount() {
+  axios.get('https://api.stlouisfed.org/fred/series/observations?series_id=USDONTD156N&api_key=18bb0a3811be85b540fd34517d6ec1d3&file_type=json&limit=1&date=2019-01-02&sort_order=desc')
+  .then((response) => {
+    
+    let libor = parseFloat(response.data.observations[0].value.replace(/,/g, ".")
+    ).toFixed(2);
+    libor = Number(libor)
+    this.setState({libor})
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+}
 
 onChecked(value) { 
   this.setState({type:value})
@@ -66,7 +88,29 @@ grossCalc() {
 }
 
 costChange(obj) {
-this.setState(obj)
+  this.setState(obj)
+  setTimeout(() => {
+    let totalCost = this.state.landCost + (this.state.grossSF * this.state.costSF)
+    this.setState({totalCost})
+  })
+}
+
+debtCalc(obj) {
+  this.setState(obj)
+  setTimeout(() => {
+    let equityAmt = this.state.totalCost * (1-(this.state.debtRatio/100))
+    let debtAmt = this.state.totalCost - equityAmt
+    this.setState({equityAmt, debtAmt})
+    // this.setState({totalCost})
+  })
+}
+
+intCalc(obj) {
+  this.setState(obj)
+  setTimeout(() => {
+    let totalInt = this.state.libor + (this.state.bps/100)
+    this.setState({totalInt})
+  })
 }
 
 
@@ -91,24 +135,32 @@ render () {
         </View>
         {/* TYPE OF BUILD */}
         <TypeBuild 
-        onChecked={this.onChecked} 
-        isChecked={this.isChecked}
+          onChecked={this.onChecked} 
+          isChecked={this.isChecked}
         />
 
         {/* DIMENSIONS */}
         <Dimensions  
-        changeDimensions={this.changeDimensions}
-        grossSF={this.state.grossSF}
-
+          changeDimensions={this.changeDimensions}
+          grossSF={this.state.grossSF}
         />
 
         {/* COST */}
         <Cost 
-        costChange={this.costChange}/>
+          costChange={this.costChange}
+          totalCost={this.state.totalCost}
+          totalLandCost={this.state.landCost}
+        />
 
         {/* DEBT */}
-        {/* <Debt /> */}
-
+        <Debt
+        libor={this.state.libor}
+        debtCalc={this.debtCalc}
+        intCalc={this.intCalc}
+        debtAmt={this.state.debtAmt}
+        equityAmt={this.state.equityAmt}
+        totalInt={this.state.totalInt}
+        />
         {/* RENT/SALES INFO */}
 
 

@@ -35,6 +35,7 @@ export default function Dimensions({changeDimensions, grossSF}) {
                 <TextInput
                     style={{ width: 40, height: 40, borderColor: 'gray', borderWidth: 1 }}
                     placeholder="feet"
+                    keyboardType="number-pad"
                     onChangeText={(number)=> changeDimensions({length: parseInt(number)})}
                 />
             </View>
@@ -43,6 +44,7 @@ export default function Dimensions({changeDimensions, grossSF}) {
                 <TextInput
                     style={{ width: 40, height: 40, borderColor: 'gray', borderWidth: 1 }}
                     placeholder="floors"
+                    keyboardType="number-pad"
                     onChangeText={(number)=> changeDimensions({floors: parseInt(number)})}
                 />
             </View>
